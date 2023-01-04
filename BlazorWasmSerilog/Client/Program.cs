@@ -19,19 +19,16 @@ var loglevelSwitch = new LoggingLevelSwitch();
 loglevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Error;
 
 string LogTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}]  {Message,-120:j}     {NewLine}{Exception}";
-var loggingConfig = new LoggerConfiguration()
-    .MinimumLevel.Information()
+Log.Logger = new LoggerConfiguration()
      .MinimumLevel.ControlledBy(loglevelSwitch) // This has no effect on the Log Level
      .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
         // .ReadFrom.Configuration(builder.Configuration);
-         //.Enrich.FromLogContext()
-         //.WriteTo.Console(outputTemplate: LogTemplate)
-        // .WriteTo.BrowserConsole(outputTemplate: LogTemplate);
-         //.WriteTo.Console()
-         .WriteTo.BrowserConsole();
-         //.CreateLogger();
+         .Enrich.FromLogContext()
+         // .WriteTo.BrowserConsole(outputTemplate: LogTemplate);
+         .WriteTo.BrowserConsole()
+         .CreateLogger();
 
-Log.Logger = loggingConfig.CreateLogger();
+//Log.Logger = loggingConfig.CreateLogger();
 
 Serilog.Debugging.SelfLog.Enable(message => {
     // Do something with `message`
@@ -39,10 +36,7 @@ Serilog.Debugging.SelfLog.Enable(message => {
     Console.WriteLine("error in configuring Serilog :" + message);
 });
 
-
-
-
-
+builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
 await builder.Build().RunAsync();
 
