@@ -15,6 +15,7 @@ builder.Host.UseSerilog(); // will redirect all log events through your Serilog 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+//https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-7.0&tabs=visual-studio
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,7 +23,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging(); // will setup http listner (/ingest) to capture logs coming from client serilog emitter
+//https://github.com/serilog/serilog-aspnetcore
+app.UseSerilogIngestion(); // will setup http listner (/ingest) to capture logs coming from client serilog emitter
+app.UseSerilogRequestLogging(); //setup the middleware
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
