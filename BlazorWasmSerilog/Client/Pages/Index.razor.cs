@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorWasmSerilog.Client.Shared;
+using Microsoft.AspNetCore.Components;
 using Serilog;
+using Serilog.Events;
 using System;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -17,18 +19,25 @@ namespace BlazorWasmSerilog.Client.Pages
         [Inject]
         private ILoggerFactory LoggerFactory { get; set; }
 
+        //[Inject]
+        //private DynamicSeriLoggingLevelSwitches _dynamicLogLevel { get; set; }
+
         protected override Task OnInitializedAsync()
         {
+
+            //_dynamicLogLevel.MicrosoftLevelSwitch.MinimumLevel = LogEventLevel.Error;
+            //_dynamicLogLevel.MicrosoftLevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Information;
+
             var logger = LoggerFactory.CreateLogger<Counter>();
 
 
-            logger.LogInformation("Info from factory");
-            logger.LogWarning("Warning from factory");
-            logger.LogError("Error from factory");
+            //logger.LogInformation("Info from factory");
+            //logger.LogWarning("Warning from factory");
+            //logger.LogError("Error from factory");
 
-            _logger1.LogInformation("Info from Microsoft");
-            _logger1.LogWarning("Warning from Microsoft");
-            _logger1.LogError("Error from Microsoft");
+            //_logger1.LogInformation("Info from Microsoft");
+            //_logger1.LogWarning("Warning from Microsoft");
+            //_logger1.LogError("Error from Microsoft");
 
             _logger.Information("Hello World");
             _logger.Warning("This is Warning");
