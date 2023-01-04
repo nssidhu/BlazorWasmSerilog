@@ -10,7 +10,7 @@ namespace BlazorWasmSerilog.Client.Pages
         private static readonly Serilog.ILogger _logger = Serilog.Log.ForContext<Index>();
         protected override Task OnInitializedAsync()
         {
-
+           
             _logger.Information("Hello World");
             _logger.Warning("This is Warning");
             _logger.Error("This is error");

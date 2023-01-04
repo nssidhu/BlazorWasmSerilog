@@ -1,10 +1,10 @@
 {
   "Serilog": {
-    "Using": [ "Serilog.Sinks.Console" ],
+    "Using": [ "Serilog.Sinks.BrowserConsole" ],
     "MinimumLevel": "Debug",
     "WriteTo": [
       {
-        "Name": "Console",
+        "Name": "BrowserConsole",
         "Args": {
           "outputTemplate": "[{Timestamp:HH:mm:ss} {SourceContext} [{Level}] {Message}{NewLine}{Exception}"
         }
