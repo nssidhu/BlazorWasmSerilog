@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// If needed, Clear default providers
+builder.Logging.ClearProviders();
 
 //https://github.com/serilog/serilog-aspnetcore
 builder.Host.UseSerilog(); // will redirect all log events through your Serilog pipeline.

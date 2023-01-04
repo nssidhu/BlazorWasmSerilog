@@ -1,5 +1,6 @@
 using BlazorWasmSerilog.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorWasmSerilog.Server.Controllers
 {
@@ -14,9 +15,12 @@ namespace BlazorWasmSerilog.Server.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
+   
+
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
+     
         }
 
         [HttpGet]
