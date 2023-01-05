@@ -43,7 +43,7 @@ string LogTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}]  {Message
 
 //This will enable use to use Serilog.Log.ForContext<Index>() from any page
 Log.Logger = new LoggerConfiguration()
-     .MinimumLevel.ControlledBy(dynamicLogLevel) // This has no effect on the Log Level
+     .MinimumLevel.ControlledBy(dynamicLogLevel) 
      .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
      .Enrich.WithProperty("Source", "BlazorWebAssembly")
      .Enrich.WithProperty("AppName", "GetInLineV6")

@@ -17,10 +17,12 @@ namespace BlazorWasmSerilog.Server.Controllers
 
    
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, ILoggerFactory LoggerFactory)
         {
             _logger = logger;
-     
+            var logger2 = LoggerFactory.CreateLogger<WeatherForecastController>();
+            logger2.LogWarning("Testing Logger Factory");
+
         }
 
         [HttpGet]
