@@ -25,11 +25,11 @@ builder.Logging.ClearProviders();
 var dynamicLogLevel = new DynamicSeriLoggingLevelSwitches();
 dynamicLogLevel.MinimumLevel = LogEventLevel.Information;
 
-//dynamicLogLevel.MicrosoftLevelSwitch.MinimumLevel = LogEventLevel.Error;
-dynamicLogLevel.SQLServerRemoteLog.MinimumLevel = LogEventLevel.Error;
+dynamicLogLevel.MicrosoftLevelSwitch.MinimumLevel = LogEventLevel.Warning;
+dynamicLogLevel.SQLServerRemoteLog.MinimumLevel = LogEventLevel.Warning;
 
-var loglevelSwitch = new LoggingLevelSwitch();
-loglevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Warning;
+//var loglevelSwitch = new LoggingLevelSwitch();
+//loglevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Information;
 
 //var configuration = new ConfigurationBuilder()
 //        .SetBasePath(Directory.GetCurrentDirectory())
@@ -40,13 +40,14 @@ loglevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Warning;
 string LogTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}]  {Message,-120:j}     {NewLine}{Exception}";
 
 
-
+var correlationID = Guid.NewGuid().ToString("n");
 //This will enable use to use Serilog.Log.ForContext<Index>() from any page
 Log.Logger = new LoggerConfiguration()
      .MinimumLevel.ControlledBy(dynamicLogLevel) 
-     .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
+     .Enrich.WithProperty("InstanceId", correlationID)
      .Enrich.WithProperty("Source", "BlazorWebAssembly")
      .Enrich.WithProperty("AppName", "GetInLineV6")
+     .Enrich.WithCorrelationIdHeader(correlationID)
      .WriteTo.BrowserConsole()
      .WriteTo.BrowserHttp($"{builder.HostEnvironment.BaseAddress}ingest", controlLevelSwitch: dynamicLogLevel.SQLServerRemoteLog) //Need to do additional setup on Server side to recieve this log
      .Enrich.FromLogContext()

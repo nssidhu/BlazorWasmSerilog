@@ -11,6 +11,7 @@ using System.Data;
 
 //    var expr = "@Level = 'Information' and AppId is not null and Items[?] like 'C%'";
 
+//https://github.com/serilog-mssql/serilog-sinks-mssqlserver/blob/dev/README.md
 var columnOptions = new ColumnOptions
 {
     AdditionalColumns = new Collection<SqlColumn>
@@ -18,12 +19,18 @@ var columnOptions = new ColumnOptions
                    new SqlColumn("UserName", SqlDbType.VarChar),
                    new SqlColumn("AppName", SqlDbType.VarChar),
                    new SqlColumn("Source", SqlDbType.VarChar),
-                   new SqlColumn("SourceContext", SqlDbType.VarChar),
+                   new SqlColumn("SourceContext", SqlDbType.VarChar,dataLength:500),
                    new SqlColumn("InstanceId", SqlDbType.VarChar),
+                   new SqlColumn("ConnectionId", SqlDbType.VarChar),
                    new SqlColumn("Origin", SqlDbType.VarChar)
                }
 }; //through this coulmnsOptions we can dynamically  add custom columns which we want to add in database
 
+columnOptions.Store.Add(StandardColumn.LogEvent); //uses JSON Format
+columnOptions.LogEvent.DataLength = 4000;
+columnOptions.LogEvent.ExcludeStandardColumns = true;
+columnOptions.LogEvent.ExcludeAdditionalProperties = true; //If we have Column with same name(case Sensitive) than the value will not be stored in Logevent
+columnOptions.Store.Remove(StandardColumn.Properties); //uses XML format
 var loglevelSwitch = new LoggingLevelSwitch();
 loglevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Information;
 
@@ -42,9 +49,10 @@ string[] ExludeFilter = { "Microsoft.AspNetCore.Routing.EndpointMiddleware",
                          "Serilog.AspNetCore.RequestLoggingMiddleware"
 };
 
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.ControlledBy(loglevelSwitch)
-    //.Filter.ByExcluding("SourceContext like 'Microsoft.Hosting.Lifetime%' or SourceContext like 'Microsoft.AspNetCore.Hosting.Diagnostics%' or SourceContext like 'Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware%' or SourceContext like 'Serilog.AspNetCore.RequestLoggingMiddleware%'")
+     //.Filter.ByExcluding("SourceContext like 'Microsoft.Hosting.Lifetime%' or SourceContext like 'Microsoft.AspNetCore.Hosting.Diagnostics%' or SourceContext like 'Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware%' or SourceContext like 'Serilog.AspNetCore.RequestLoggingMiddleware%'")
     .Filter.ByExcluding(evt =>
     {
         LogEventPropertyValue name;
@@ -55,9 +63,12 @@ Log.Logger = new LoggerConfiguration()
         //return evt.Properties.TryGetValue("SourceContext", out name) &&
         //    (name as ScalarValue)?.Value as string == "World";
     })
+   
     .WriteTo.Console()
-    .WriteTo.MSSqlServer("Server=tcp:getinlinedev-srv.database.windows.net,1433;Initial Catalog=GetinLine-Dev-DB;Persist Security Info=False;User ID=nssidhu;Password=Rajandar1!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;", sinkOptions: new MSSqlServerSinkOptions { TableName = "LogNNN", AutoCreateSqlTable =true }
-               , null, null, LogEventLevel.Information, null, columnOptions: columnOptions, null, null)
+    .WriteTo.MSSqlServer("Server=tcp:getinlinedev-srv.database.windows.net,1433;Initial Catalog=GetinLine-Dev-DB;Persist Security Info=False;User ID=nssidhu;Password=Rajandar1!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;", 
+             sinkOptions: new MSSqlServerSinkOptions 
+             { TableName = "LogNNN", AutoCreateSqlTable =true }
+               , null, null, LogEventLevel.Information, null, columnOptions: columnOptions,  null, null)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +106,9 @@ app.UseSerilogRequestLogging(options =>
         diagnosticContext.Set("UserID", "nssidhu@yahoo.com");
         diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
         diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+        diagnosticContext.Set("ClientIP", httpContext?.Connection?.RemoteIpAddress?.ToString());
+        diagnosticContext.Set("UserAgent", httpContext?.Request.Headers["User-Agent"].FirstOrDefault());
+       
     };
 });
 
