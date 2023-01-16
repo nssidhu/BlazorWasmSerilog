@@ -47,6 +47,7 @@ Log.Logger = new LoggerConfiguration()
      .Enrich.WithProperty("InstanceId", correlationID)
      .Enrich.WithProperty("Source", "BlazorWebAssembly")
      .Enrich.WithProperty("AppName", "GetInLineV6")
+     .Enrich.WithCorrelationId()
      .Enrich.WithCorrelationIdHeader(correlationID)
      .WriteTo.BrowserConsole()
      .WriteTo.BrowserHttp($"{builder.HostEnvironment.BaseAddress}ingest", controlLevelSwitch: dynamicLogLevel.SQLServerRemoteLog) //Need to do additional setup on Server side to recieve this log

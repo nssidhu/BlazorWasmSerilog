@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using BlazorWasmSerilog.Shared
 @inject HttpClient Http
+@inject ILoggerFactory LoggerFactory
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -42,6 +43,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var logger = LoggerFactory.CreateLogger<Counter>();
+
+
+       
+        logger.LogError("This is error from fetchweather");
         forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 }

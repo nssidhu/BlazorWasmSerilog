@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 using Serilog.Context;
@@ -22,7 +23,8 @@ var columnOptions = new ColumnOptions
                    new SqlColumn("SourceContext", SqlDbType.VarChar,dataLength:500),
                    new SqlColumn("InstanceId", SqlDbType.VarChar),
                    new SqlColumn("ConnectionId", SqlDbType.VarChar),
-                   new SqlColumn("Origin", SqlDbType.VarChar)
+                   new SqlColumn("Origin", SqlDbType.VarChar),
+                   new SqlColumn("RequestId", SqlDbType.VarChar)
                }
 }; //through this coulmnsOptions we can dynamically  add custom columns which we want to add in database
 
@@ -103,7 +105,7 @@ app.UseSerilogRequestLogging(options =>
     {
         var userName = httpContext.User.Identity.IsAuthenticated ? httpContext.User.Identity.Name : "Guest1"; //Gets user Name from user Identity 
         LogContext.PushProperty("UserName", userName); //Push user in LogContext;  
-        diagnosticContext.Set("UserID", "nssidhu@yahoo.com");
+        LogContext.PushProperty("UserID", "nssidhu@yahoo.com");
         diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
         diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
         diagnosticContext.Set("ClientIP", httpContext?.Connection?.RemoteIpAddress?.ToString());
